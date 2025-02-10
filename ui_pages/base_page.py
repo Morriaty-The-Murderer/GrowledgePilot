@@ -18,4 +18,4 @@ class BasePage:
 
     def launch(self):
         if self.interface:  # 避免重复 launch
-            self.interface.launch(server_name=GRADIO_HOST, server_port=GRADIO_PORT, reload=True)
+            self.interface.launch(server_name=GRADIO_HOST, server_port=GRADIO_PORT)
