@@ -4,6 +4,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.join(ROOT_DIR, "data")
+LOGS_DIR = os.path.join(ROOT_DIR, "logs")
+
+if not os.path.exists(LOGS_DIR):
+    os.makedirs(LOGS_DIR)
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
+
 # 数据库配置
 DATABASE_URL = "sqlite:///./data/learning_assistant.db"
 
@@ -11,7 +20,6 @@ DATABASE_URL = "sqlite:///./data/learning_assistant.db"
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-3.5-turbo")
-
 
 # 其他 API 密钥 (根据需要添加)
 # NEWS_API_KEY = os.getenv("NEWS_API_KEY")
