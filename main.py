@@ -1,9 +1,8 @@
-from utils.database import init_db, get_db
+from controllers.objective_controller import ObjectiveController
+from controllers.user_controller import UserController
 from ui_pages.home_page import HomePage
 from ui_pages.learning_page import LearningPage
-from controllers.user_controller import UserController
-from controllers.objective_controller import ObjectiveController
-from utils.database import SessionLocal
+from utils.database import init_db, SessionLocal
 
 if __name__ == "__main__":
     init_db()
@@ -23,10 +22,10 @@ if __name__ == "__main__":
             occupation="Software Engineer",
             language_preference="English"
         )
-        
+
         # Initialize meta prompt session
         user_controller.start_meta_prompt_flow(user.id)
-        
+
         # Create test objectives
         objective_controller.create_objective(
             user_id=user.id,
@@ -36,7 +35,7 @@ if __name__ == "__main__":
             current_level="Beginner",
             target_level="Intermediate"
         )
-        
+
         objective_controller.create_objective(
             user_id=user.id,
             name="Investment",

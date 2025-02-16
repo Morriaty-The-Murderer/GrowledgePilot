@@ -1,9 +1,10 @@
 import gradio as gr
-from ui_pages.base_page import BasePage
+from sqlalchemy.orm import Session
+
+from controllers.meta_prompt_controller import MetaPromptController
 from controllers.objective_controller import ObjectiveController
 from controllers.user_controller import UserController
-from controllers.meta_prompt_controller import MetaPromptController
-from sqlalchemy.orm import Session
+from ui_pages.base_page import BasePage
 from .learning_page import LearningPage  # type: ignore
 
 
@@ -94,7 +95,8 @@ class HomePage(BasePage):
         if objectives:
             data = []
             for obj in objectives:
-                data.append([obj.id, obj.name, obj.description, obj.priority, obj.current_level, obj.target_level])
+                data.append([obj.id, obj.name, obj.description, obj.priority,
+                             obj.current_level, obj.target_level])
             return data
         else:
             return []
@@ -111,7 +113,7 @@ class HomePage(BasePage):
             )
             self.reg_submit = gr.Button("Register")
             self.reg_message = gr.Markdown()
-            
+
             with gr.Group():
                 gr.Markdown("### Learning Preferences")
                 self.learning_style = gr.Radio(
@@ -141,7 +143,7 @@ class HomePage(BasePage):
             self.handle_registration,
             inputs=[self.reg_name, self.reg_age, self.reg_occupation, self.reg_language],
             outputs=[self.reg_message, self.learning_style, self.learning_goals,
-                    self.prompt_preview, self.progress_bar]
+                     self.prompt_preview, self.progress_bar]
         )
 
     def handle_registration(self, name, age, occupation, language):
@@ -153,11 +155,11 @@ class HomePage(BasePage):
                 language_preference=language
             )
             self.user_id = user.id
-            
+
             # Initialize meta prompt session
             session = self.meta_prompt_controller.create_session(user.id)
             progress = self.meta_prompt_controller.get_session_progress(session.id)
-            
+
             return (
                 f"Registration successful! Welcome {name}!",
                 gr.update(visible=True),

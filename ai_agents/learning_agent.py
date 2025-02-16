@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from typing import Optional
-from .base import BaseAIAgent
 from sqlalchemy.orm import Session
-from controllers.user_controller import UserController
+
 from controllers.objective_controller import ObjectiveController
+from controllers.user_controller import UserController
+from .base import BaseAIAgent
 
 
 class LearningAgent(BaseAIAgent):

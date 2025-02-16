@@ -15,24 +15,24 @@ class UserModel(Base, BaseMixin):
     name = Column(String, index=True)
     age = Column(Integer)
     occupation = Column(String)
-    
+
     # Learning preferences and personalization fields
     preferred_learning_style = Column(String, nullable=True)
     language_preference = Column(String, nullable=True)
     learning_goals = Column(JSON, default={})
     personalized_prompt = Column(Text, nullable=True)
     meta_prompt_complete = Column(Boolean, default=False)
-    
+
     # Relationships
     objectives = relationship("ObjectiveModel", back_populates="user")
     meta_prompt_sessions = relationship("MetaPromptSession", back_populates="user")
     created_at = Column(DateTime)
     last_login = Column(DateTime)
 
-    def update_learning_preferences(self, 
-                                  learning_style: str = None,
-                                  language: str = None,
-                                  goals: dict = None) -> None:
+    def update_learning_preferences(self,
+                                    learning_style: str = None,
+                                    language: str = None,
+                                    goals: dict = None) -> None:
         """Update user's learning preferences"""
         if learning_style:
             self.preferred_learning_style = learning_style

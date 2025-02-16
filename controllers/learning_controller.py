@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy.orm import Session
-from models.objective import ObjectiveModel
-from models.learning_session import LearningSessionModel
 from datetime import datetime
 
+from sqlalchemy.orm import Session
 
-def create_objective(db: Session, user_id: int, name: str, description: str, priority: int, current_level: str,
+from models.learning_session import LearningSessionModel
+from models.objective import ObjectiveModel
+
+
+def create_objective(db: Session, user_id: int, name: str, description: str,
+                     priority: int, current_level: str,
                      target_level: str):
     db_obj = ObjectiveModel(user_id=user_id, name=name, description=description, priority=priority,
                             current_level=current_level, target_level=target_level)
@@ -15,10 +18,12 @@ def create_objective(db: Session, user_id: int, name: str, description: str, pri
     return db_obj
 
 
-def create_learning_session(db: Session, user_id: int, objective_id: int, content: str, ai_prompt: str = None):
+def create_learning_session(db: Session, user_id: int, objective_id: int,
+                            content: str, ai_prompt: str = None):
     start_time = datetime.utcnow()
-    db_session = LearningSessionModel(user_id=user_id, objective_id=objective_id, start_time=start_time,
-                                      content=content, ai_prompt=ai_prompt)
+    db_session = LearningSessionModel(user_id=user_id, objective_id=objective_id,
+                                      start_time=start_time, content=content,
+                                      ai_prompt=ai_prompt)
     db.add(db_session)
     db.commit()
     db.refresh(db_session)
@@ -44,7 +49,8 @@ def get_objectives_by_user(db: Session, user_id: int):
     return db.query(ObjectiveModel).filter(ObjectiveModel.user_id == user_id).all()
 
 
-def update_objective(db: Session, objective_id: int, name: str = None, description: str = None, priority: int = None,
+def update_objective(db: Session, objective_id: int, name: str = None,
+                     description: str = None, priority: int = None,
                      current_level: str = None, target_level: str = None):
     objective = get_objective(db, objective_id)
     if objective:
