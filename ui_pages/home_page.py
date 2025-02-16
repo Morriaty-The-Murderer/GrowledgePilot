@@ -1,6 +1,8 @@
 import gradio as gr
 from ui_pages.base_page import BasePage
-from controllers.objective_controller import create_objective, get_objectives_by_user
+from controllers.objective_controller import ObjectiveController
+from controllers.user_controller import UserController
+from controllers.meta_prompt_controller import MetaPromptController
 from sqlalchemy.orm import Session
 from .learning_page import LearningPage  # type: ignore
 
@@ -10,18 +12,25 @@ class HomePage(BasePage):
         super().__init__()
         self.db = db
         self.learning_page = learning_page
-        self.user_id = 1
+        self.user_id = None
         self.objective_id = None
+        self.user_controller = UserController(db)
+        self.objective_controller = ObjectiveController(db)
+        self.meta_prompt_controller = MetaPromptController(db)
 
         with gr.Blocks() as self.interface:
-            self.tab_home = gr.TabItem("Home", id="home")  # 添加 id
-            self.tab_learning = gr.TabItem("Learning", id="learning", visible=False)  # 初始时不可见
+            self.tab_home = gr.TabItem("Home", id="home")
+            self.tab_register = gr.TabItem("Register", id="register", visible=True)
+            self.tab_learning = gr.TabItem("Learning", id="learning", visible=False)
 
             with self.tab_home:
                 gr.Markdown("# GrowledgePilot")
                 with gr.Tabs():
                     with gr.TabItem("Dashboard"):
                         self.create_dashboard_tab()
+
+            with self.tab_register:
+                self.create_registration_tab()
 
             with self.tab_learning:
                 self.learning_page.render_content()  # 将 LearningPage 的内容渲染到这里
@@ -70,13 +79,18 @@ class HomePage(BasePage):
         except ValueError:
             return "Priority must be an integer."
 
-        objective = create_objective(db=self.db, user_id=self.user_id, name=name, description=description,
-                                     priority=priority, current_level=current_level,
-                                     target_level=target_level)  # type: ignore
-        return f"Objective '{objective.name}' added successfully."  # type: ignore
+        objective = self.objective_controller.create_objective(
+            user_id=self.user_id,
+            name=name,
+            description=description,
+            priority=priority,
+            current_level=current_level,
+            target_level=target_level
+        )
+        return f"Objective '{objective.name}' added successfully."
 
     def refresh_objectives(self):
-        objectives = get_objectives_by_user(db=self.db, user_id=self.user_id)  # type: ignore
+        objectives = self.objective_controller.get_objectives_by_user(self.user_id)
         if objectives:
             data = []
             for obj in objectives:
@@ -85,7 +99,85 @@ class HomePage(BasePage):
         else:
             return []
 
+    def create_registration_tab(self):
+        with gr.Column():
+            gr.Markdown("## User Registration")
+            self.reg_name = gr.Textbox(label="Name")
+            self.reg_age = gr.Number(label="Age", precision=0)
+            self.reg_occupation = gr.Textbox(label="Occupation")
+            self.reg_language = gr.Dropdown(
+                label="Preferred Language",
+                choices=["English", "Chinese", "Spanish", "Other"]
+            )
+            self.reg_submit = gr.Button("Register")
+            self.reg_message = gr.Markdown()
+            
+            with gr.Group():
+                gr.Markdown("### Learning Preferences")
+                self.learning_style = gr.Radio(
+                    label="Preferred Learning Style",
+                    choices=["Visual", "Auditory", "Reading/Writing", "Kinesthetic"],
+                    visible=False
+                )
+                self.learning_goals = gr.CheckboxGroup(
+                    label="Learning Goals",
+                    choices=["Technical Skills", "Soft Skills", "Academic", "Professional"],
+                    visible=False
+                )
+                self.prompt_preview = gr.Textbox(
+                    label="Personalized Prompt Preview",
+                    interactive=False,
+                    visible=False
+                )
+                self.progress_bar = gr.Slider(
+                    label="Registration Progress",
+                    minimum=0,
+                    maximum=100,
+                    value=0,
+                    interactive=False
+                )
+
+        self.reg_submit.click(
+            self.handle_registration,
+            inputs=[self.reg_name, self.reg_age, self.reg_occupation, self.reg_language],
+            outputs=[self.reg_message, self.learning_style, self.learning_goals,
+                    self.prompt_preview, self.progress_bar]
+        )
+
+    def handle_registration(self, name, age, occupation, language):
+        try:
+            user = self.user_controller.create_user(
+                name=name,
+                age=int(age),
+                occupation=occupation,
+                language_preference=language
+            )
+            self.user_id = user.id
+            
+            # Initialize meta prompt session
+            session = self.meta_prompt_controller.create_session(user.id)
+            progress = self.meta_prompt_controller.get_session_progress(session.id)
+            
+            return (
+                f"Registration successful! Welcome {name}!",
+                gr.update(visible=True),
+                gr.update(visible=True),
+                gr.update(visible=True),
+                progress["progress_percentage"]
+            )
+        except Exception as e:
+            return (
+                f"Registration failed: {str(e)}",
+                gr.update(visible=False),
+                gr.update(visible=False),
+                gr.update(visible=False),
+                0
+            )
+
     def start_learning(self, objective_selected):
+        if not self.user_id:
+            return gr.update(visible=False), gr.update(visible=False)
+
         if objective_selected:
             try:
                 objective_id = int(objective_selected)
@@ -94,5 +186,5 @@ class HomePage(BasePage):
             self.learning_page.objective_id = objective_id
             self.learning_page.init_agent()
 
-            return gr.update(visible=False), gr.update(visible=True)  # 更新 visible 属性
+            return gr.update(visible=False), gr.update(visible=True)
         return gr.update(visible=True), gr.update(visible=False)
