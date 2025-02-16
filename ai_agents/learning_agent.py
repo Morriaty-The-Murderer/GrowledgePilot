@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
+from typing import Optional
 from .base import BaseAIAgent
 from sqlalchemy.orm import Session
-from controllers.user_controller import get_user
-from controllers.objective_controller import get_objective
+from controllers.user_controller import UserController
+from controllers.objective_controller import ObjectiveController
 
 
 class LearningAgent(BaseAIAgent):
@@ -11,10 +12,12 @@ class LearningAgent(BaseAIAgent):
         self.user_id = user_id
         self.objective_id = objective_id
         self.db = db
+        self.user_controller = UserController(db)
+        self.objective_controller = ObjectiveController(db)
 
     def generate_learning_response(self, user_input: str, prompt_template: str) -> str:
-        user = get_user(db=self.db, user_id=self.user_id)  # type: ignore
-        objective = get_objective(db=self.db, objective_id=self.objective_id)  # type: ignore
+        user = self.user_controller.get_user(self.user_id)
+        objective = self.objective_controller.get_objective(self.objective_id)
 
         if not user or not objective:
             return "User or objective not found."

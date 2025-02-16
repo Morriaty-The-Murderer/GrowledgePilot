@@ -3,6 +3,7 @@ from ui_pages.base_page import BasePage
 from ai_agents.learning_agent import LearningAgent
 from sqlalchemy.orm import Session
 from controllers import learning_controller
+from controllers.user_controller import UserController
 from ai_agents import prompt_templates
 
 
@@ -10,9 +11,11 @@ class LearningPage(BasePage):
     def __init__(self, db: Session):
         super().__init__()
         self.db = db
+        self.user_controller = UserController(db)
         self.learning_agent = None
         self.objective_id = None
         self.learning_session_id = None
+        self.user_id = None
 
         with gr.Blocks() as self.interface:  # 将 self.interface 赋值给 gr.Blocks() 实例
             self.render_content()  # 将内容渲染移到 render_content 方法中
@@ -34,20 +37,31 @@ class LearningPage(BasePage):
         self.end_session_button = gr.Button("End Session")
         self.end_session_button.click(self.end_session, inputs=[], outputs=[])
 
-    def init_agent(self):
+    def init_agent(self, user_id: int = None):
         if not self.learning_agent:
             if self.objective_id:
-                self.learning_agent = LearningAgent(user_id=1, objective_id=self.objective_id,
-                                                    db=self.db)  # type: ignore
+                self.user_id = user_id or self.user_id
+                if not self.user_id:
+                    return False
+                    
+                user = self.user_controller.get_user(self.user_id)
+                if not user:
+                    return False
 
-                # 创建学习会话
+                self.learning_agent = LearningAgent(
+                    user_id=self.user_id,
+                    objective_id=self.objective_id,
+                    db=self.db
+                )
+
+                # Create learning session
                 self.learning_session_id = learning_controller.create_learning_session(
                     db=self.db,
-                    user_id=1,
+                    user_id=self.user_id,
                     objective_id=self.objective_id,
                     content=f"Start learning objective {self.objective_id}",
                     ai_prompt=prompt_templates.GENERAL_LEARNING_PROMPT
-                ).id  # type: ignore
+                ).id
 
     def respond(self, user_input):
         if self.learning_agent:
