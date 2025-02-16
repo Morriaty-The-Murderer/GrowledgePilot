@@ -7,11 +7,15 @@
 
 ## 🚀 Introduction
 
-GrowledgePilot is an AI-powered personalized learning assistant designed to help you learn efficiently and enjoyably across multiple domains. It combines the power of programming and AI to provide intelligent learning workflows, personalized content, and interactive experiences, enabling you to overcome learning challenges and achieve continuous knowledge growth.
+GrowledgePilot is an AI-powered personalized learning assistant designed to help you learn efficiently and enjoyably
+across multiple domains. It combines the power of programming and AI to provide intelligent learning workflows,
+personalized content, and interactive experiences, enabling you to overcome learning challenges and achieve continuous
+knowledge growth.
 
 ## ✨ Features
 
-- 🎯 **Personalized Learning Plans**: AI dynamically adjusts your learning path based on your interests, goals, and current proficiency.
+- 🎯 **Personalized Learning Plans**: AI dynamically adjusts your learning path based on your interests, goals, and
+  current proficiency.
 - 🤖 **Interactive AI Tutoring**: Engage with AI for customized study guidance through text or voice.
 - 🔍 **Real-Time Knowledge Updates**: Fetches latest news, stock prices, and data insights through integrated APIs.
 - 📊 **Progress Tracking**: Stores and visualizes your learning progress using SQLite.
@@ -20,10 +24,15 @@ GrowledgePilot is an AI-powered personalized learning assistant designed to help
 
 GrowledgePilot employs several key strategies to enhance your learning experience:
 
-1.  **Active Recall:** The AI assistant regularly asks you questions about what you've learned, forcing you to actively retrieve information from memory. This strengthens neural pathways and improves long-term retention.
-2.  **Spaced Repetition:**  (Future Feature) The system will track when you last interacted with specific concepts and strategically schedule reviews to optimize retention.
-3.  **Interleaving:** GrowledgePilot encourages you to switch between different subjects or topics within a learning session. This helps you build stronger connections between concepts and improves your ability to transfer knowledge to new situations.
-4.  **Elaboration:** The AI prompts you to explain concepts in your own words, connect them to your prior knowledge, and generate examples.  This deepens your understanding and promotes critical thinking.
+1. **Active Recall:** The AI assistant regularly asks you questions about what you've learned, forcing you to actively
+   retrieve information from memory. This strengthens neural pathways and improves long-term retention.
+2. **Spaced Repetition:**  (Future Feature) The system will track when you last interacted with specific concepts and
+   strategically schedule reviews to optimize retention.
+3. **Interleaving:** GrowledgePilot encourages you to switch between different subjects or topics within a learning
+   session. This helps you build stronger connections between concepts and improves your ability to transfer knowledge
+   to new situations.
+4. **Elaboration:** The AI prompts you to explain concepts in your own words, connect them to your prior knowledge, and
+   generate examples. This deepens your understanding and promotes critical thinking.
 
 ## 🛠 Installation
 

@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, Optional, List
-from datetime import datetime
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+from typing import Dict, Optional
 
-from settings import DATABASE_URL
+from sqlalchemy import create_engine
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import sessionmaker
+
 from models.base import Base
-from models.user import UserModel
-from models.objective import ObjectiveModel
-from models.learning_session import LearningSessionModel
 from models.meta_prompt_session import MetaPromptSession, MetaPromptStatus
+from models.user import UserModel
+from settings import DATABASE_URL
 
 # Create database engine
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -59,14 +57,14 @@ def store_user_preferences(user_id: int, preferences: Dict) -> bool:
         user = db.query(UserModel).filter(UserModel.id == user_id).first()
         if not user:
             return False
-        
+
         if 'learning_style' in preferences:
             user.preferred_learning_style = preferences['learning_style']
         if 'language' in preferences:
             user.language_preference = preferences['language']
         if 'goals' in preferences:
             user.learning_goals = preferences['goals']
-            
+
         db.commit()
         return True
     except SQLAlchemyError:
@@ -101,10 +99,10 @@ def update_prompt_session(session_id: int, preferences: Dict) -> bool:
         ).first()
         if not session:
             return False
-            
+
         for key, value in preferences.items():
             session.add_preference(key, value)
-        
+
         session.update_status(MetaPromptStatus.COLLECTING)
         db.commit()
         return True
@@ -124,7 +122,7 @@ def complete_prompt_session(session_id: int, generated_prompt: str) -> bool:
         ).first()
         if not session:
             return False
-            
+
         session.set_generated_prompt(generated_prompt)
         session.user.set_personalized_prompt(generated_prompt)
         db.commit()
@@ -143,7 +141,7 @@ def get_user_prompt_data(user_id: int) -> Optional[Dict]:
         user = db.query(UserModel).filter(UserModel.id == user_id).first()
         if not user:
             return None
-            
+
         return {
             'personalized_prompt': user.personalized_prompt,
             'learning_style': user.preferred_learning_style,

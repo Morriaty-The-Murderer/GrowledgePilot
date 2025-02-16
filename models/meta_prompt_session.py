@@ -12,7 +12,7 @@ from .user import UserModel
 
 class MetaPromptStatus(str, Enum):
     STARTED = "started"
-    COLLECTING = "collecting" 
+    COLLECTING = "collecting"
     COMPLETED = "completed"
 
 
@@ -24,7 +24,7 @@ class MetaPromptSession(Base, BaseMixin):
     collected_preferences = Column(JSON, default={})
     generated_prompt = Column(String, nullable=True)
     completed_at = Column(DateTime, nullable=True)
-    
+
     # Relationships
     user = relationship("UserModel", back_populates="meta_prompt_sessions")
 
@@ -69,6 +69,7 @@ class MetaPromptSession(Base, BaseMixin):
             'completed_at': self.completed_at.isoformat() if self.completed_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None,
         }
+
 
 # Add Meta Prompt Session relationship to UserModel
 UserModel.meta_prompt_sessions = relationship("MetaPromptSession", back_populates="user")

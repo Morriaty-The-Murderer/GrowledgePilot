@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from datetime import datetime
 from typing import Dict, Optional, List
+
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from models.user import UserModel
-from models.meta_prompt_session import MetaPromptSession, MetaPromptStatus
 from controllers.meta_prompt_controller import MetaPromptController
+from models.meta_prompt_session import MetaPromptSession, MetaPromptStatus
+from models.user import UserModel
 from utils.database import get_db
 
 
@@ -16,11 +17,11 @@ class UserController:
         self.meta_prompt_controller = MetaPromptController(db)
 
     def create_user(
-        self,
-        name: str,
-        age: int,
-        occupation: str,
-        language_preference: Optional[str] = None
+            self,
+            name: str,
+            age: int,
+            occupation: str,
+            language_preference: Optional[str] = None
     ) -> UserModel:
         """Create a new user with initial preferences."""
         db_user = UserModel(
@@ -45,12 +46,12 @@ class UserController:
         return self.db.query(UserModel).filter(UserModel.name == name).first()
 
     def update_user_profile(
-        self,
-        user_id: int,
-        name: Optional[str] = None,
-        age: Optional[int] = None,
-        occupation: Optional[str] = None,
-        language_preference: Optional[str] = None
+            self,
+            user_id: int,
+            name: Optional[str] = None,
+            age: Optional[int] = None,
+            occupation: Optional[str] = None,
+            language_preference: Optional[str] = None
     ) -> UserModel:
         """Update user profile information."""
         user = self.get_user(user_id)
@@ -74,11 +75,11 @@ class UserController:
         return user
 
     def update_learning_preferences(
-        self,
-        user_id: int,
-        learning_style: Optional[str] = None,
-        goals: Optional[Dict] = None,
-        interests: Optional[List[str]] = None
+            self,
+            user_id: int,
+            learning_style: Optional[str] = None,
+            goals: Optional[Dict] = None,
+            interests: Optional[List[str]] = None
     ) -> UserModel:
         """Update user's learning preferences."""
         user = self.get_user(user_id)
@@ -89,7 +90,7 @@ class UserController:
             )
 
         updated_goals = user.learning_goals.copy() if user.learning_goals else {}
-        
+
         if learning_style:
             user.preferred_learning_style = learning_style
         if goals:
@@ -111,13 +112,13 @@ class UserController:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
-        
+
         if user.meta_prompt_complete:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="Meta prompt flow already completed"
             )
-            
+
         return self.meta_prompt_controller.create_session(user_id)
 
     def set_personalized_prompt(self, user_id: int, prompt: str) -> UserModel:
@@ -128,7 +129,7 @@ class UserController:
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="User not found"
             )
-            
+
         user.set_personalized_prompt(prompt)
         self.db.commit()
         self.db.refresh(user)

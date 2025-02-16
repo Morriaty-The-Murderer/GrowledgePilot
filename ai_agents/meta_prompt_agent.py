@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
-from typing import Dict, List, Optional
 import json
+from typing import Dict, List, Optional
 
-from .base import BaseAIAgent
 from models.meta_prompt_session import MetaPromptSession
 from models.user import UserModel
+from .base import BaseAIAgent
 
 
 class MetaPromptAgent(BaseAIAgent):
     def __init__(self, api_key: Optional[str] = None, base_url: Optional[str] = None):
         super().__init__(api_key, base_url)
         self.collection_prompts = {
-            "learning_style": "Based on the user's background as a {occupation} aged {age}, what would be their most effective learning style?",
-            "goals": "What specific learning goals would be most beneficial for a {occupation} aged {age} named {name}?",
-            "interests": "What topics or areas might interest a {occupation} like {name} who is {age} years old?",
+            "learning_style": "Based on the user's background as a {occupation} aged {age}, "
+                              "what would be their most effective learning style?",
+            "goals": "What specific learning goals would be most beneficial for a {occupation} "
+                     "aged {age} named {name}?",
+            "interests": "What topics or areas might interest a {occupation} like {name} "
+                         "who is {age} years old?",
         }
 
     def analyze_user_preferences(self, user: UserModel) -> Dict:
@@ -21,7 +24,8 @@ class MetaPromptAgent(BaseAIAgent):
         messages = [
             {
                 "role": "system",
-                "content": "You are an AI learning specialist analyzing user data to determine optimal learning preferences."
+                "content": "You are an AI learning specialist analyzing user data to determine "
+                           "optimal learning preferences."
             },
             {
                 "role": "user",
@@ -36,13 +40,13 @@ class MetaPromptAgent(BaseAIAgent):
         prompt_template = self.collection_prompts.get(preference_type)
         if not prompt_template:
             raise ValueError(f"Unknown preference type: {preference_type}")
-        
+
         prompt = prompt_template.format(
             name=user.name,
             age=user.age,
             occupation=user.occupation
         )
-        
+
         messages = [
             {"role": "system", "content": "You are a learning preference analyst."},
             {"role": "user", "content": prompt}
@@ -72,7 +76,8 @@ class MetaPromptAgent(BaseAIAgent):
             },
             {
                 "role": "user",
-                "content": f"Create a personalized learning prompt for a user with the following context: {json.dumps(context)}"
+                "content": f"Create a personalized learning prompt for a user with "
+                           f"the following context: {json.dumps(context)}"
             }
         ]
         return self.generate_response(messages)
@@ -102,7 +107,8 @@ class MetaPromptAgent(BaseAIAgent):
             },
             {
                 "role": "user",
-                "content": f"Create a learning path for user with preferences: {json.dumps(preferences)}"
+                "content": f"Create a learning path for user with "
+                           f"preferences: {json.dumps(preferences)}"
             }
         ]
         path_suggestion = self.generate_response(messages)
@@ -117,7 +123,8 @@ class MetaPromptAgent(BaseAIAgent):
             },
             {
                 "role": "user",
-                "content": f"Adapt this prompt: '{prompt}' to match preferences: {json.dumps(user_preferences)}"
+                "content": f"Adapt this prompt: '{prompt}' to match "
+                           f"preferences: {json.dumps(user_preferences)}"
             }
         ]
         return self.generate_response(messages)

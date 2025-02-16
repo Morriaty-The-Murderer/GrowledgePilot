@@ -1,10 +1,11 @@
 import gradio as gr
-from ui_pages.base_page import BasePage
-from ai_agents.learning_agent import LearningAgent
 from sqlalchemy.orm import Session
+
+from ai_agents import prompt_templates
+from ai_agents.learning_agent import LearningAgent
 from controllers import learning_controller
 from controllers.user_controller import UserController
-from ai_agents import prompt_templates
+from ui_pages.base_page import BasePage
 
 
 class LearningPage(BasePage):
@@ -43,7 +44,7 @@ class LearningPage(BasePage):
                 self.user_id = user_id or self.user_id
                 if not self.user_id:
                     return False
-                    
+
                 user = self.user_controller.get_user(self.user_id)
                 if not user:
                     return False

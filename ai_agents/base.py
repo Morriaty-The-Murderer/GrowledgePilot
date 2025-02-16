@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from abc import ABC
 from typing import Dict, List, Optional
+
 from openai import OpenAI
+
 from settings import OPENAI_API_KEY, OPENAI_BASE_URL, MODEL_NAME
 
 
@@ -18,7 +20,8 @@ class BaseAIAgent(ABC):
         base_url = base_url or OPENAI_BASE_URL
 
         if not api_key:
-            raise ValueError("OpenAI API key is required. Please set it in settings.py or pass it as an argument.")
+            raise ValueError("OpenAI API key is required. "
+                             "Please set it in settings.py or pass it as an argument.")
         if not base_url:
             print("UserWarning: OpenAI Base URL is not set. Using it may cause some error")
 
